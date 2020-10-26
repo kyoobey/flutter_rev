@@ -1,0 +1,16 @@
+name: Personality Quiz
+description: get a personality score based on quiz questions
+version: 1.0.0
+
+publish_to: 'none'
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.0
+
+flutter:
+  uses-material-design: true
