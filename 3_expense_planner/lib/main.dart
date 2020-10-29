@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-import './widgets/user_transactions.dart';
+import './widgets/transaction_list.dart';
+import './widgets/new_transaction.dart';
+import './models/transaction.dart';
 
 
 void main() => runApp(App());
@@ -18,19 +20,54 @@ class App extends StatelessWidget {
 
 }
 
-class HomePage extends StatelessWidget {
 
-	//String titleInput;
-	//String amountInput;
+class HomePage extends StatefulWidget {
+
+	@override
+	_HomePageState createState() => _HomePageState();
+
+}
+
+
+class _HomePageState extends State<HomePage> {
+
+	final List<Transaction> _transactions = [
+		Transaction(id: 't1', title: 'shoes', amount: 1299.99, date: DateTime.now()),
+		Transaction(id: 't2', title: 'shirts', amount: 699.99, date: DateTime.now())
+	];
+
+	void _addTransaction(String title, double amount) {
+		final newTransaction = Transaction(
+			title: title,
+			amount: amount,
+			date: DateTime.now(),
+			id: DateTime.now().toString()
+		);
+
+		setState(() {
+			_transactions.add(newTransaction);
+		});
+	}
+
+	void _startNewTransaction(ctx) {
+		showModalBottomSheet(context: ctx, builder: (_) {
+			return NewTransaction(_addTransaction);
+		});
+	}
 
 	@override
 	Widget build(BuildContext context) {
 		return Scaffold(
 			appBar: AppBar(
 				title: Text('Expense Planner'),
+				actions: [
+					IconButton(
+						icon: Icon(Icons.add),
+						onPressed: () => _startNewTransaction(context)
+					)
+				]
 			),
 			body: SingleChildScrollView(child: Column(
-				// mainAxisAlignment: MainAxisAlignment.start,
 				crossAxisAlignment: CrossAxisAlignment.center,
 				children: [
 					Container(
@@ -41,9 +78,14 @@ class HomePage extends StatelessWidget {
 							elevation: 5
 						)
 					),
-					UserTransactions()
+					TransactionList(_transactions)
 				]
-			))
+			)),
+			floatingActionButton: FloatingActionButton(
+				child: Icon(Icons.add),
+				onPressed: () => _startNewTransaction(context)
+			),
+			floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat
 		);
 	}
 
