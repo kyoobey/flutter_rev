@@ -42,7 +42,7 @@ class TransactionList extends StatelessWidget {
 									radius: 30,
 									child: Padding(
 										padding: EdgeInsets.all(6),
-										child: FittedBox(child: Text('💸 ${transaction.amount.toStringAsFixed(2)}'))
+										child: FittedBox(child: Text('\$${transaction.amount.toStringAsFixed(2)}'))
 									)
 								),
 								title: Text(transaction.title, style: Theme.of(context).textTheme.title),
