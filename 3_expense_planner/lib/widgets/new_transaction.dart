@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 
 class NewTransaction extends StatefulWidget {
@@ -14,17 +15,33 @@ class NewTransaction extends StatefulWidget {
 
 class _NewTransactionState extends State<NewTransaction> {
 
-	final titleController = TextEditingController();
-	final amountController = TextEditingController();
+	final _titleController = TextEditingController();
+	final _amountController = TextEditingController();
 
-	void addTransaction() {
-		if (titleController.text.isEmpty || amountController.text.isEmpty) return;
-		final amount = double.parse(amountController.text);
+	DateTime _date;
+
+	void _addTransaction() {
+		if (_titleController.text.isEmpty || _amountController.text.isEmpty || _date==null) return;
+		final amount = double.parse(_amountController.text);
 		if (amount <= 0) return;
 
-		widget.addTransactionCallback(titleController.text, amount);
+		widget.addTransactionCallback(_titleController.text, amount, _date);
 
 		Navigator.of(context).pop();
+	}
+
+	void _datePicker() {
+		showDatePicker(
+			context: context,
+			initialDate: DateTime.now(),
+			firstDate: DateTime(2019),
+			lastDate: DateTime.now()
+		).then((date) {
+			if (date==null) return;
+			setState(() {
+				_date = date;
+			});
+		});
 	}
 
 	@override
@@ -38,19 +55,34 @@ class _NewTransactionState extends State<NewTransaction> {
 					children: [
 						TextField(
 							decoration: InputDecoration(labelText: 'Title'),
-							controller: titleController,
-							onSubmitted: (_) => addTransaction()
+							controller: _titleController,
+							onSubmitted: (_) => _addTransaction()
 						),
 						TextField(
 							decoration: InputDecoration(labelText: 'Amount'),
-							controller: amountController,
+							controller: _amountController,
 							keyboardType: TextInputType.number,
-							onSubmitted: (_) => addTransaction()
+							onSubmitted: (_) => _addTransaction()
 						),
-						FlatButton(
-							child: Text('Add transaction'),
-							textColor: Colors.purple,
-							onPressed: addTransaction
+						Container(
+							height: 70,
+							child: Row(children: [
+								Expanded(child: Text(_date==null
+									? 'no date chosen'
+									: 'picked date: ${DateFormat.yMd().format(_date)}'
+								)),
+								FlatButton(
+									textColor: Theme.of(context).primaryColor,
+									child: Text('choose date', style: TextStyle(fontWeight: FontWeight.bold)),
+									onPressed: _datePicker
+								)
+							])
+						),
+						RaisedButton(
+							child: Text('Add transaction', style: TextStyle(fontWeight: FontWeight.bold)),
+							color: Theme.of(context).primaryColor,
+							textColor: Theme.of(context).textTheme.button.color,
+							onPressed: _addTransaction
 						)
 					]
 				)
