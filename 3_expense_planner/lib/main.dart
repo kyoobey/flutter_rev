@@ -75,6 +75,12 @@ class _HomePageState extends State<HomePage> {
 		});
 	}
 
+	void _deleteTransaction(String id) {
+		setState(() {
+			_transactions.removeWhere((transaction) => transaction.id == id);
+		});
+	}
+
 	void _startNewTransaction(ctx) {
 		showModalBottomSheet(context: ctx, builder: (_) {
 			return NewTransaction(_addTransaction);
@@ -105,7 +111,7 @@ class _HomePageState extends State<HomePage> {
 					//	)
 					//),
 					Chart(_recentTransactions),
-					TransactionList(_transactions)
+					TransactionList(_transactions, _deleteTransaction)
 				]
 			)),
 			floatingActionButton: FloatingActionButton(
