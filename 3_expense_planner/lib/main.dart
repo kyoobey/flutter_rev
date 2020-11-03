@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import './models/transaction.dart';
 import './widgets/transaction_list.dart';
@@ -7,14 +6,7 @@ import './widgets/new_transaction.dart';
 import './widgets/chart.dart';
 
 
-void main() {
-	WidgetsFlutterBinding.ensureInitialized();
-	SystemChrome.setPreferredOrientations([
-		DeviceOrientation.portraitUp,
-		DeviceOrientation.portraitDown
-	]);
-	runApp(App());
-}
+void main() => runApp(App());
 
 
 class App extends StatelessWidget {
@@ -64,6 +56,8 @@ class _HomePageState extends State<HomePage> {
 		//Transaction(id: 't1', title: 'shoes', amount: 1299.99, date: DateTime.now()),
 	];
 
+	bool _showChart = false;
+
 	List<Transaction> get _recentTransactions {
 		return _transactions.where((transaction) {
 			return transaction.date.isAfter(DateTime.now().subtract(Duration(days: 7)));
@@ -97,6 +91,10 @@ class _HomePageState extends State<HomePage> {
 
 	@override
 	Widget build(BuildContext context) {
+		final mediaQuery = MediaQuery.of(context);
+
+		final isLandspace = mediaQuery.orientation == Orientation.landscape;
+
 		final appBar = AppBar(
 			title: Text('Expense Planner'),
 			actions: [
@@ -107,31 +105,44 @@ class _HomePageState extends State<HomePage> {
 			]
 		);
 
+		final transactionList = Container(
+			height: (	mediaQuery.size.height 
+						- appBar.preferredSize.height
+						- mediaQuery.padding.top) * 0.7,
+			child: TransactionList(_transactions, _deleteTransaction)
+		);
+
 		return Scaffold(
 			appBar: appBar,
 			body: SingleChildScrollView(child: Column(
 				crossAxisAlignment: CrossAxisAlignment.center,
 				children: [
-					//Container(
-					//	width: double.infinity,
-					//	child: Card(
-					//		child: Text('CHART'),
-					//		color: Colors.blue,
-					//		elevation: 5
-					//	)
-					//),
-					Container(
-						height: (	MediaQuery.of(context).size.height 
-									- appBar.preferredSize.height
-									- MediaQuery.of(context).padding.top) * 0.3,
-						child: Chart(_recentTransactions)
+					if (isLandspace) Row(
+						mainAxisAlignment: MainAxisAlignment.center,
+						children: [
+							Text('Show Chart'),
+							Switch(value: _showChart, onChanged: (val) {
+								setState(() {
+									_showChart = val;
+								});
+							})
+						]
 					),
-					Container(
-						height: (	MediaQuery.of(context).size.height 
-									- appBar.preferredSize.height
-									- MediaQuery.of(context).padding.top) * 0.7,
-						child: TransactionList(_transactions, _deleteTransaction)
-					)
+					if (!isLandspace) Container(
+							height: (	mediaQuery.size.height 
+										- appBar.preferredSize.height
+										- mediaQuery.padding.top) * 0.3,
+							child: Chart(_recentTransactions)
+						),
+					if (!isLandspace) transactionList,
+					if (isLandspace) _showChart
+						? Container(
+							height: (	mediaQuery.size.height 
+										- appBar.preferredSize.height
+										- mediaQuery.padding.top) * 0.7,
+							child: Chart(_recentTransactions)
+						)
+						: transactionList
 				]
 			)),
 			floatingActionButton: FloatingActionButton(
