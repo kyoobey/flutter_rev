@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import './models/transaction.dart';
 import './widgets/transaction_list.dart';
@@ -6,7 +7,14 @@ import './widgets/new_transaction.dart';
 import './widgets/chart.dart';
 
 
-void main() => runApp(App());
+void main() {
+	WidgetsFlutterBinding.ensureInitialized();
+	SystemChrome.setPreferredOrientations([
+		DeviceOrientation.portraitUp,
+		DeviceOrientation.portraitDown
+	]);
+	runApp(App());
+}
 
 
 class App extends StatelessWidget {
@@ -89,16 +97,18 @@ class _HomePageState extends State<HomePage> {
 
 	@override
 	Widget build(BuildContext context) {
+		final appBar = AppBar(
+			title: Text('Expense Planner'),
+			actions: [
+				IconButton(
+					icon: Icon(Icons.add),
+					onPressed: () => _startNewTransaction(context)
+				)
+			]
+		);
+
 		return Scaffold(
-			appBar: AppBar(
-				title: Text('Expense Planner'),
-				actions: [
-					IconButton(
-						icon: Icon(Icons.add),
-						onPressed: () => _startNewTransaction(context)
-					)
-				]
-			),
+			appBar: appBar,
 			body: SingleChildScrollView(child: Column(
 				crossAxisAlignment: CrossAxisAlignment.center,
 				children: [
@@ -110,8 +120,18 @@ class _HomePageState extends State<HomePage> {
 					//		elevation: 5
 					//	)
 					//),
-					Chart(_recentTransactions),
-					TransactionList(_transactions, _deleteTransaction)
+					Container(
+						height: (	MediaQuery.of(context).size.height 
+									- appBar.preferredSize.height
+									- MediaQuery.of(context).padding.top) * 0.3,
+						child: Chart(_recentTransactions)
+					),
+					Container(
+						height: (	MediaQuery.of(context).size.height 
+									- appBar.preferredSize.height
+									- MediaQuery.of(context).padding.top) * 0.7,
+						child: TransactionList(_transactions, _deleteTransaction)
+					)
 				]
 			)),
 			floatingActionButton: FloatingActionButton(
