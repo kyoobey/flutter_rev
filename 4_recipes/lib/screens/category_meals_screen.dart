@@ -42,7 +42,7 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
 
 	void _removeMeal(String mealId) {
 		setState(() {
-			displayedMeals.removeWhere((meal) => meal.id == mealId);
+			//displayedMeals.removeWhere((meal) => meal.id == mealId);
 		});
 	}
 
@@ -58,7 +58,7 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
 					duration: displayedMeals[idx].duration,
 					complexity: displayedMeals[idx].complexity,
 					affordability: displayedMeals[idx].affordability,
-					removeMealCallback: _removeMeal
+					//removeMealCallback: _removeMeal
 				);
 			}, itemCount: displayedMeals.length)
 		);
